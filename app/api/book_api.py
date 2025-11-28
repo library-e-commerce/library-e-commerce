@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.book_service import BookService
 from app.domain.book_model import BookResponse
+from app.domain.book_model import BookCreate, BookUpdate
 
 router = APIRouter(prefix="/libros", tags=["Libros"])
 
@@ -31,3 +32,27 @@ def search_books(
     """Buscar libros por título o autor"""
     service = BookService(db)
     return service.search_books(titulo, autor)
+
+
+# [API-LIBRO-002] Endpoints para crear nuevos libros (Admin)
+@router.post("/", response_model=BookResponse, status_code=201)
+def create_book(book: BookCreate, db: Session = Depends(get_db)):
+    """Crear nuevo libro (Admin)"""
+    service = BookService(db)
+    return service.create_book(book)
+
+@router.put("/{libro_id}", response_model=BookResponse)
+def update_book(libro_id: int, book: BookUpdate, db: Session = Depends(get_db)):
+    """Actualizar libro (Admin)"""
+    service = BookService(db)
+    updated_book = service.update_book(libro_id, book)
+    if not updated_book:
+        raise HTTPException(status_code=404, detail="Libro no encontrado")
+    return updated_book
+
+@router.delete("/{libro_id}", status_code=204)
+def delete_book(libro_id: int, db: Session = Depends(get_db)):
+    """Eliminar libro (Admin)"""
+    service = BookService(db)
+    service.delete_book(libro_id)
+    return None
