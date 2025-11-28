@@ -12,3 +12,14 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """Registrar nuevo usuario"""
     service = UserService(db)
     return service.create_user(user)
+
+
+# [API-USUARIO-02] Endpoint para verificación de correo
+@router.get("/verificar/{token}")
+def verify_email(token: str, db: Session = Depends(get_db)):
+    """Verificar email de usuario"""
+    service = UserService(db)
+    result = service.verify_email(token)
+    if not result:
+        raise HTTPException(status_code=400, detail="Token inválido o expirado")
+    return {"message": "Email verificado correctamente"}
