@@ -36,3 +36,14 @@ def get_pedidos_by_user(usuario_id: int, db: Session = Depends(get_db)):
     """Listar pedidos de un usuario"""
     service = PedidoService(db)
     return service.get_pedidos_by_user(usuario_id)
+
+
+# [API-PEDIDO-002] Endpoint para cancelar pedido
+@router.put("/{pedido_id}/cancelar", response_model=PedidoResponse)
+def cancel_pedido(pedido_id: int, db: Session = Depends(get_db)):
+    """Cancelar un pedido"""
+    service = PedidoService(db)
+    pedido = service.cancel_pedido(pedido_id)
+    if not pedido:
+        raise HTTPException(status_code=400, detail="No se pudo cancelar el pedido")
+    return pedido
