@@ -30,3 +30,11 @@ def get_facturacion_by_pedido(pedido_id: int, db: Session = Depends(get_db)):
     if not factura:
         raise HTTPException(status_code=404, detail="Factura no encontrada")
     return factura
+
+# [API-FACTURA-002] Endpoint para anular factura (Admin)
+@router.delete("/{factura_id}", status_code=204)
+def anular_factura(factura_id: int, db: Session = Depends(get_db)):
+    """Anular factura (Admin)"""
+    service = FacturacionService(db)
+    service.anular_factura(factura_id)
+    return None
