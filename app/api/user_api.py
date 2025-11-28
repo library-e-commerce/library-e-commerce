@@ -23,3 +23,16 @@ def verify_email(token: str, db: Session = Depends(get_db)):
     if not result:
         raise HTTPException(status_code=400, detail="Token inválido o expirado")
     return {"message": "Email verificado correctamente"}
+
+
+from app.domain.user_model import UserLogin
+
+# [API-USUARIO-03] Endpoint para autenticación de usuario (Login)
+@router.post("/login")
+def login(credentials: UserLogin, db: Session = Depends(get_db)):
+    """Autenticar usuario"""
+    service = UserService(db)
+    user = service.authenticate(credentials.correo, credentials.contraseña)
+    if not user:
+        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+    return {"message": "Login exitoso", "user": user}
