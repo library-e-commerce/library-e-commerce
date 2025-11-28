@@ -34,3 +34,14 @@ def remove_item(carrito_id: int, item_id: int, db: Session = Depends(get_db)):
     service = CarritoService(db)
     service.remove_item(carrito_id, item_id)
     return None
+
+
+# [API-CARRITO-002] Endpoint para checkout
+@router.post("/{carrito_id}/checkout")
+def checkout(carrito_id: int, db: Session = Depends(get_db)):
+    """Procesar checkout - convertir carrito en pedido"""
+    service = CarritoService(db)
+    pedido = service.checkout(carrito_id)
+    if not pedido:
+        raise HTTPException(status_code=400, detail="No se pudo procesar el checkout")
+    return {"message": "Checkout exitoso", "pedido_id": pedido.idpedido}
